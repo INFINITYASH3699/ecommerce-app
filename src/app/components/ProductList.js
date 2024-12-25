@@ -1,23 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { fetchProducts } from "../utils/api";
-import ProductCard from "../components/ProductCard";
 import FilterSort from "../components/FilterSort";
+import ProductCard from "../components/ProductCard";
 
 const ProductList = () => {
-  // State for products and filters
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filterSort, setFilterSort] = useState({ category: "", sort: "" });
+  const [filterSort, setFilterSort] = useState({ category: "All", sort: "" });
 
-  // Fetch products from API
   useEffect(() => {
-    const getProducts = async () => {
+    // Fetch products from a public API
+    const fetchProducts = async () => {
       try {
-        const data = await fetchProducts();
+        const response = await fetch("https://fakestoreapi.com/products");
+        const data = await response.json();
         setProducts(data);
         setFilteredProducts(data);
         setLoading(false);
@@ -26,41 +25,47 @@ const ProductList = () => {
         setLoading(false);
       }
     };
-    getProducts();
+
+    fetchProducts();
   }, []);
 
-  // Handle filter and sort changes
-  const handleFilterSortChange = ({ category, sort }) => {
+  useEffect(() => {
+    // Apply filtering and sorting
     let updatedProducts = [...products];
 
     // Filter by category
-    if (category && category !== "All") {
+    if (filterSort.category && filterSort.category !== "All") {
       updatedProducts = updatedProducts.filter(
-        (product) => product.category === category
+        (product) => product.category === filterSort.category
       );
     }
 
     // Sort by price
-    if (sort === "price_low") {
+    if (filterSort.sort === "price_low") {
       updatedProducts.sort((a, b) => a.price - b.price);
-    } else if (sort === "price_high") {
+    } else if (filterSort.sort === "price_high") {
       updatedProducts.sort((a, b) => b.price - a.price);
     }
 
     setFilteredProducts(updatedProducts);
-  };
+  }, [filterSort, products]);
 
-  if (loading) return <p>Loading products...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center flex items-center space-x-2">
+          <div className="w-8 h-8 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+          <p className="text-xl">Loading...</p>
+        </div>
+      </div>
+    );
+  }
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Product List</h1>
-      {/* Filter and Sort Component */}
-      <FilterSort onFilterSortChange={handleFilterSortChange} />
-
-      {/* Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <FilterSort onFilterSortChange={setFilterSort} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

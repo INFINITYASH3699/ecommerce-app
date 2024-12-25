@@ -1,59 +1,76 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import axios from "axios";
 
 export default function ProductDetails() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id"); // Get the product ID from the URL query
-
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
+  // Fetch product details
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchProductDetails = async () => {
       try {
-        const response = await axios.get(
-          `https://fakestoreapi.com/products/${id}`
-        );
-        setProduct(response.data);
+        const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+        const data = await response.json();
+        setProduct(data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching product details:", error);
-      } finally {
-        setLoading(false);
       }
     };
-
-    if (id) {
-      fetchProduct();
-    }
+    if (id) fetchProductDetails();
   }, [id]);
 
+  // Add to Cart Function
+  const addToCart = () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const updatedCart = [...cart, { ...product, quantity: 1 }];
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    alert(`${product.title} added to cart!`);
+  };
+
   if (loading) {
-    return <p className="text-center mt-8">Loading...</p>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center flex items-center space-x-2">
+          <div className="w-8 h-8 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+          <p className="text-xl">Loading...</p>
+        </div>
+      </div>
+    );
   }
+  
 
   if (!product) {
-    return <p className="text-center mt-8">Product not found.</p>;
+    return <p className="text-center">Product not found.</p>;
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Image
-          src={product.image}
-          alt={product.title}
-          width={400}
-          height={400}
-          className="object-cover rounded-lg shadow-md"
-        />
-        <div>
+    <div className="max-w-4xl mx-auto p-4 my-8">
+      <div className="flex flex-col md:flex-row gap-28">
+        <div className="w-full md:w-1/2">
+          <Image
+            src={product.image}
+            alt={product.title}
+            width={500}
+            height={500}
+            className="rounded-lg"
+          />
+        </div>
+        <div className="w-full md:w-1/2">
           <h1 className="text-2xl font-bold mb-4">{product.title}</h1>
           <p className="text-lg text-gray-700 mb-4">{product.description}</p>
+          <p className="text-lg text-gray-700 mb-4">{product.category}</p>
+          {/* <p className="text-lg text-gray-700 mb-4">{product.rating}</p> */}
           <p className="text-xl font-semibold mb-4">${product.price}</p>
-          <button className="bg-green-500 text-white py-2 px-6 rounded hover:bg-green-600 transition">
+          <button
+            onClick={addToCart}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
             Add to Cart
           </button>
         </div>

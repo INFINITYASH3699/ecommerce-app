@@ -33,7 +33,14 @@ export default function ProductsPage() {
   };
 
   if (loading) {
-    return <div className="text-center text-lg p-10">Loading products...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center flex items-center space-x-2">
+          <div className="w-8 h-8 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+          <p className="text-xl">Loading products...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const FilterSort = ({ onFilterSortChange }) => {
-  // States for filters and sorting
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("");
 
-  // Categories for filtering
   const categories = [
     "All",
     "electronics",
@@ -16,14 +14,12 @@ const FilterSort = ({ onFilterSortChange }) => {
     "women's clothing",
   ];
 
-  // Handle filter and sort changes
-  const handleFilterSortChange = () => {
+  useEffect(() => {
     onFilterSortChange({ category, sort });
-  };
+  }, [category, sort, onFilterSortChange]);
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-      {/* Filter Dropdown */}
+    <div className="flex flex-col md:flex-row justify-end items-center mb-6 gap-4">
       <div>
         <label className="text-sm font-semibold mr-2">Category:</label>
         <select
@@ -39,7 +35,6 @@ const FilterSort = ({ onFilterSortChange }) => {
         </select>
       </div>
 
-      {/* Sort Dropdown */}
       <div>
         <label className="text-sm font-semibold mr-2">Sort By:</label>
         <select
@@ -47,19 +42,11 @@ const FilterSort = ({ onFilterSortChange }) => {
           onChange={(e) => setSort(e.target.value)}
           className="p-2 border rounded-md"
         >
-          <option value="">None</option>
+          <option value="">Any</option>
           <option value="price_low">Price: Low to High</option>
           <option value="price_high">Price: High to Low</option>
         </select>
       </div>
-
-      {/* Apply Button */}
-      <button
-        onClick={handleFilterSortChange}
-        className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-      >
-        Apply
-      </button>
     </div>
   );
 };

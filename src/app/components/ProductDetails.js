@@ -3,12 +3,15 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { useCart } from "../context/CartContext"; // Import Cart Context
 
 export default function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+
+  const { addToCart } = useCart(); // Access addToCart function from context
 
   // Fetch product details
   useEffect(() => {
@@ -25,14 +28,15 @@ export default function ProductDetails() {
     if (id) fetchProductDetails();
   }, [id]);
 
-  // Add to Cart Function
-  const addToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const updatedCart = [...cart, { ...product, quantity: 1 }];
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    alert(`${product.title} added to cart!`);
+  // Handle adding to cart
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product); // Use addToCart from CartContext
+      alert(`${product.title} added to cart!`);
+    }
   };
 
+  // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -43,14 +47,15 @@ export default function ProductDetails() {
       </div>
     );
   }
-  
 
+  // If product is not found
   if (!product) {
     return <p className="text-center">Product not found.</p>;
   }
 
+  // Render product details
   return (
-    <div className="max-w-4xl mx-auto p-4 my-8">
+    <div className="max-w-4xl mx-auto p-4 my-8 mt-28">
       <div className="flex flex-col md:flex-row gap-28">
         <div className="w-full md:w-1/2">
           <Image
@@ -65,10 +70,9 @@ export default function ProductDetails() {
           <h1 className="text-2xl font-bold mb-4">{product.title}</h1>
           <p className="text-lg text-gray-700 mb-4">{product.description}</p>
           <p className="text-lg text-gray-700 mb-4">{product.category}</p>
-          {/* <p className="text-lg text-gray-700 mb-4">{product.rating}</p> */}
           <p className="text-xl font-semibold mb-4">${product.price}</p>
           <button
-            onClick={addToCart}
+            onClick={handleAddToCart} // Add to cart button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
             Add to Cart

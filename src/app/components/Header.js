@@ -1,53 +1,77 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaShoppingCart, FaSearch } from "react-icons/fa"; // Import search icon
+import { FaShoppingCart, FaSearch, FaTimes, FaUserCircle  } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useSearch } from "../context/SearchContext";
 
 const Header = () => {
-  const { cartCount } = useCart(); // Get cart count from context
-  const { setSearchQuery } = useSearch(); // Get search query handler
-  const [searchInput, setSearchInput] = useState(""); // Local state for search input
+  const { cartCount } = useCart();
+  const { setSearchQuery } = useSearch();
+  const [searchInput, setSearchInput] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Handle search input
-  const handleSearchInputChange = (e) => {
-    setSearchInput(e.target.value);
-  };
+  // Scroll effect to toggle shadow
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10); // Detect scroll for shadow
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  // Handle search submission
-  const handleSearch = () => {
-    setSearchQuery(searchInput); // Update global query when the search icon is clicked
+  const handleSearchInputChange = (e) => setSearchInput(e.target.value);
+
+  const handleSearch = () => setSearchQuery(searchInput);
+
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setSearchQuery("");
   };
 
   return (
-    <header className="bg-blue-500 p-4 text-white flex justify-between items-center">
+    <header
+      className={`fixed top-0 left-0 w-full p-5 bg-blue-600 text-white flex justify-between items-center z-50 transition-all duration-300 ${
+        isScrolled ? "shadow-xl" : ""
+      }`}
+    >
+      {/* Logo */}
       <Link href="/">
-        <h1 className="text-xl font-bold cursor-pointer">E-Commerce</h1>
+        <h1 className="text-sm md:text-3xl font-bold cursor-pointer tracking-wide">
+          E-Commerce
+        </h1>
       </Link>
 
       {/* Search Bar */}
-      <div className="flex items-center bg-white text-black rounded p-2">
+      <div className="flex items-center bg-white text-black rounded shadow-md w-[40%] md:w-[40%]">
         <input
           type="text"
           value={searchInput}
           onChange={handleSearchInputChange}
           placeholder="Search products..."
-          className=" rounded-l w-56 focus:outline-none"
+          className="w-full p-3 text-sm md:text-lg rounded-l-full focus:outline-none"
         />
+        {searchInput && (
+          <button
+            onClick={handleClearSearch}
+            className="p-3 text-gray-600 hover:text-red-500 duration-200"
+          >
+            <FaTimes size={20} />
+          </button>
+        )}
         <button
           onClick={handleSearch}
-          className="p-2 bg-blue-500 text-white rounded-r flex items-center justify-center"
+          className="p-3 text-blue-600 rounded-r-full hover:text-blue-900 transition duration-200"
         >
-          <FaSearch size={16} />
+          <FaSearch size={18} />
         </button>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
         <Link href="/cart">
-          <div className="relative cursor-pointer">
-            <FaShoppingCart size={24} />
+          <div className="relative cursor-pointer mr-0 md:mr-2">
+            <FaShoppingCart size={28} className="" />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-3 bg-red-500 text-white rounded-full text-xs px-2">
                 {cartCount}
@@ -55,6 +79,10 @@ const Header = () => {
             )}
           </div>
         </Link>
+        <div className="relative cursor-pointer mr-0 md:mr-4">
+        <FaUserCircle size={28} />
+
+        </div>
       </div>
     </header>
   );

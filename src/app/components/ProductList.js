@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearch } from "../context/SearchContext"; // Import Search Context
 import FilterSort from "../components/FilterSort";
 import ProductCard from "../components/ProductCard";
 
@@ -10,6 +11,8 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filterSort, setFilterSort] = useState({ category: "All", sort: "" });
+
+  const { searchQuery } = useSearch(); // Use search query context
 
   useEffect(() => {
     // Fetch products from a public API
@@ -30,17 +33,23 @@ const ProductList = () => {
   }, []);
 
   useEffect(() => {
-    // Apply filtering and sorting
     let updatedProducts = [...products];
 
-    // Filter by category
+    // Apply search filter
+    if (searchQuery) {
+      updatedProducts = updatedProducts.filter((product) =>
+        product.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply category filter
     if (filterSort.category && filterSort.category !== "All") {
       updatedProducts = updatedProducts.filter(
         (product) => product.category === filterSort.category
       );
     }
 
-    // Sort by price
+    // Apply price sorting
     if (filterSort.sort === "price_low") {
       updatedProducts.sort((a, b) => a.price - b.price);
     } else if (filterSort.sort === "price_high") {
@@ -48,7 +57,7 @@ const ProductList = () => {
     }
 
     setFilteredProducts(updatedProducts);
-  }, [filterSort, products]);
+  }, [searchQuery, filterSort, products]);
 
   if (loading) {
     return (
@@ -65,11 +74,18 @@ const ProductList = () => {
   return (
     <div className="container mx-auto p-4">
       <FilterSort onFilterSortChange={setFilterSort} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      {filteredProducts.length === 0 ? (
+        // Display "No Results Found" message in center
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <p className="text-4xl font-semibold text-gray-500">Product / Item not yet listed.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

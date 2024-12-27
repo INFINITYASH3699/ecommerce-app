@@ -75,7 +75,6 @@ const ProductList = () => {
     <div className="container mx-auto p-4">
       <FilterSort onFilterSortChange={setFilterSort} />
       {filteredProducts.length === 0 ? (
-        // Display "No Results Found" message in center
         <div className="flex items-center justify-center min-h-[60vh]">
           <p className="text-4xl font-semibold text-gray-500">Product / Item not yet listed.</p>
         </div>

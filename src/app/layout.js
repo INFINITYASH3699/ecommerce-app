@@ -2,8 +2,8 @@
 
 import "./styles/globals.css";
 import Header from "./components/Header";
-import { CartProvider } from "./context/CartContext"; // Context for managing cart
-import { SearchProvider } from "./context/SearchContext"; // Context for search
+import { CartProvider } from "./context/CartContext";
+import { SearchProvider } from "./context/SearchContext";
 
 // export const metadata = {
 //   title: "E-Commerce App",
@@ -14,10 +14,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">
-        {/* Provide Context Globally */}
         <CartProvider>
           <SearchProvider>
-            {/* Header is now global */}
             <Header />
             {children}
           </SearchProvider>

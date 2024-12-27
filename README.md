@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# E-commerce App
 
-## Getting Started
+This project is an E-commerce web application built using **Next.js** and **Tailwind CSS**. It provides a seamless shopping experience with features like product filtering, sorting, and a dynamic cart. Below are the setup instructions and a brief explanation of the implemented features.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup Instructions
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Prerequisites
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1. **Node.js** (v16 or above) must be installed.
+2. **npm** or **yarn** package manager.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Steps to Run the Project
 
-## Learn More
+1. Clone the repository:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   git clone https://github.com/INFINITYASH3699/ecommerce-app.git
+   cd ecommerce-app
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-## Deploy on Vercel
+3. Start the development server:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. Open your browser and navigate to:
+
+   ```
+   http://localhost:3000
+   ```
+
+5. Build for production:
+
+   ```bash
+   npm run build
+   npm start
+   ```
+
+---
+
+## Features Implemented
+
+### 1. **Product Listing**
+
+- Displays a list of products fetched from an external API.
+- Each product shows an image, title, price, and a brief description.
+
+### 2. **Filter and Sort**
+
+- **Category Filter:** Users can filter products by categories such as electronics, jewelery, men’s clothing, and women’s clothing.
+- **Sort Options:** Products can be sorted by price (low to high or high to low).
+- Mobile-friendly design with a dropdown that expands below the "Filter & Sort" button.
+
+### 3. **Product Details**
+
+- Clicking on a product redirects to a detailed page.
+- The detailed view includes:
+  - High-quality product image.
+  - Full description and price.
+  - "Add to Cart" button with real-time cart updates.
+
+### 4. **Shopping Cart**
+
+- Real-time cart updates when products are added.
+- Cart contents are stored in the browser’s local storage to persist across sessions.
+
+### 5. **Responsive Design**
+
+- Fully responsive UI optimized for mobile, tablet, and desktop devices.
+
+---
+
+## Technology Stack
+
+- **Framework:** Next.js
+- **Styling:** Tailwind CSS
+- **API:** FakeStore API
+
+---
+
+## Future Improvements
+
+- Implement user authentication for personalized experiences.
+- Add a checkout process with payment integration.
+- Optimize images using Next.js image optimization features.
+
+---
+
+## Acknowledgments
+
+Special thanks to the [FakeStore API](https://fakestoreapi.com/) for providing the product data.
+

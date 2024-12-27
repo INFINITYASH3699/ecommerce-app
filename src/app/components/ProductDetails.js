@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useCart } from "../context/CartContext"; // Import Cart Context
 
-export default function ProductDetails() {
+// Your ProductDetails component
+function ProductDetailsComponent() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
@@ -18,11 +20,16 @@ export default function ProductDetails() {
     const fetchProductDetails = async () => {
       try {
         const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch product details");
+        }
         const data = await response.json();
         setProduct(data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching product details:", error);
+        setError("Something went wrong. Please try again.");
+        setLoading(false);
       }
     };
     if (id) fetchProductDetails();
@@ -48,6 +55,11 @@ export default function ProductDetails() {
     );
   }
 
+  // Error handling state
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
   // If product is not found
   if (!product) {
     return <p className="text-center">Product not found.</p>;
@@ -64,6 +76,7 @@ export default function ProductDetails() {
             width={500}
             height={500}
             className="rounded-lg"
+            onError={(e) => e.target.src = "/fallback-image.png"} // Fallback image
           />
         </div>
         <div className="w-full md:w-1/2">
@@ -80,5 +93,13 @@ export default function ProductDetails() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductDetails() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductDetailsComponent />
+    </Suspense>
   );
 }

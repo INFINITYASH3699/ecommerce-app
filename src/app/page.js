@@ -1,7 +1,7 @@
 "use client";
 
-import ProductList from "@/components/ProductList";
-import { useSearch } from "@/context/SearchContext";
+import ProductList from "./components/ProductList";
+import { useSearch } from "./context/SearchContext";
 
 export default function Home() {
   const { searchQuery } = useSearch();

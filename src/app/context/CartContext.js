@@ -26,7 +26,7 @@ export const CartProvider = ({ children }) => {
     const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     setCartCount(count);
-    setTotal(totalPrice.toFixed(2));
+    setTotal(totalPrice); // Keep `total` as a number
     localStorage.setItem("cart", JSON.stringify(cart)); // Sync to localStorage
   }, [cart]);
 
@@ -81,7 +81,7 @@ export const CartProvider = ({ children }) => {
       value={{
         cart,
         cartCount,
-        total,
+        total, // Keep total as a number
         addToCart,
         increaseQuantity,
         decreaseQuantity,

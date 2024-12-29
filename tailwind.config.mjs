@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+
+
 export default {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,6 +13,10 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+      },
+      fontFamily: {
+        sans: ['"PT Sans"', "sans-serif"],
+        curly: ['"Dancing Script"', 'cursive'],
       },
     },
   },

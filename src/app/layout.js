@@ -2,6 +2,7 @@
 
 import "./globals.css";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import { CartProvider } from "./context/CartContext";
 import { SearchProvider } from "./context/SearchContext";
 
@@ -13,6 +14,7 @@ export default function RootLayout({ children }) {
           <SearchProvider>
             <Header />
             {children}
+            <Footer />
           </SearchProvider>
         </CartProvider>
       </body>

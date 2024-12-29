@@ -2,7 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaShoppingCart, FaSearch, FaTimes, FaUserCircle  } from "react-icons/fa";
+import {
+  FaShoppingCart,
+  FaSearch,
+  FaTimes,
+  FaUserCircle,
+  FaHeart,
+} from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useSearch } from "../context/SearchContext";
 
@@ -32,14 +38,19 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full p-5 bg-blue-600 text-white flex justify-between items-center z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 w-full px-5 ${
+        isScrolled ? "py-2" : "py-5"
+      } bg-blue-600 text-white flex justify-between items-center z-50 transition-all duration-300 ${
         isScrolled ? "shadow-xl" : ""
       }`}
     >
       {/* Logo */}
       <Link href="/">
-        <h1 className="text-sm md:text-3xl font-bold cursor-pointer tracking-wide">
-          E-Commerce
+        <h1 className="text-sm md:text-3xl font-bold font-roboto cursor-pointer tracking-wide">
+          Infinity Store
+        </h1>
+        <h1 className="hidden md:block text-sm md:text-md font-bold cursor-pointer tracking-wide font-curly">
+          An E-Commerce platform
         </h1>
       </Link>
 
@@ -79,9 +90,11 @@ const Header = () => {
             )}
           </div>
         </Link>
+        <div className="relative cursor-pointer mr-0 hidden md:block">
+          <FaHeart size={28} />
+        </div>
         <div className="relative cursor-pointer mr-0 md:mr-4">
-        <FaUserCircle size={28} />
-
+          <FaUserCircle size={28} />
         </div>
       </div>
     </header>

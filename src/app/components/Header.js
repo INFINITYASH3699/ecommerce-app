@@ -79,9 +79,9 @@ const Header = () => {
         </button>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-2 md:gap-6">
         <Link href="/cart">
-          <div className="relative cursor-pointer mr-0 md:mr-2">
+          <div className="relative cursor-pointer mr-0">
             <FaShoppingCart size={28} className="" />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-3 bg-red-500 text-white rounded-full text-xs px-2">
@@ -90,10 +90,12 @@ const Header = () => {
             )}
           </div>
         </Link>
-        <div className="relative cursor-pointer mr-0 hidden md:block">
-          <FaHeart size={28} />
-        </div>
-        <div className="relative cursor-pointer mr-0 md:mr-4">
+        <Link href="/wishlist">
+          <div className="relative cursor-pointer mr-0">
+            <FaHeart size={28} />
+          </div>
+        </Link>
+        <div className="relative cursor-pointer mr-0">
           <FaUserCircle size={28} />
         </div>
       </div>

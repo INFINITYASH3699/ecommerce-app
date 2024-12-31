@@ -1,11 +1,12 @@
 "use client";
 
 import React, { Suspense, useState, useEffect } from "react";
+import { useWishlist } from "../context/WishlistContext";
 import { useSearchParams } from "next/navigation";
-import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import Zoom from "react-medium-image-zoom";
-import 'react-medium-image-zoom/dist/styles.css';
+import { FaHeart } from "react-icons/fa";
+import "react-medium-image-zoom/dist/styles.css";
 
 function ProductDetailsComponent() {
   const [product, setProduct] = useState(null);
@@ -15,6 +16,20 @@ function ProductDetailsComponent() {
   const [reviews, setReviews] = useState([]);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+
+  const { addToWishlist, removeFromWishlist, wishlist } = useWishlist();
+
+  const isInWishlist = wishlist.some((item) => item.id === product.id);
+
+  // Toggle wishlist status
+  const toggleWishlist = (e) => {
+    e.preventDefault(); // Prevent navigation when clicking the icon
+    if (isInWishlist) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
 
   const { addToCart } = useCart();
 
@@ -91,14 +106,26 @@ function ProductDetailsComponent() {
         </div>
         <div className="w-full md:w-1/2 flex flex-col justify-between">
           <div>
-            <h1 className="text-3xl font-extrabold text-gray-800 mb-4">
+            <div
+              onClick={toggleWishlist}
+              className="absolute top-8 md:top-10 right-8 md:right-56 cursor-pointer z-10 mt-28"
+            >
+              <FaHeart
+                className={`text-2xl ${
+                  isInWishlist ? "text-red-500" : "text-gray-300"
+                }`}
+              />
+            </div>
+            <h1 className="text-3xl font-extrabold text-gray-800 mb-4 md:pr-28">
               {product.title}
             </h1>
             <p className="text-lg text-gray-600 mb-6">{product.description}</p>
             <p className="inline-block px-3 py-1 text-sm font-semibold text-white bg-blue-500 rounded-full mb-4">
               {product.category}
             </p>
-            <p className="text-2xl font-bold text-green-600">${product.price}</p>
+            <p className="text-2xl font-bold text-green-600">
+              ${product.price}
+            </p>
           </div>
 
           <div className="flex items-center space-x-4 mt-6">
@@ -132,7 +159,9 @@ function ProductDetailsComponent() {
       </div>
 
       <div className="mt-10">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Customer Reviews</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          Customer Reviews
+        </h2>
         {reviews.length > 0 ? (
           <ul className="space-y-4">
             {reviews.map((review, index) => (

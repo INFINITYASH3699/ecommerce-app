@@ -8,7 +8,7 @@ import Chatbot from "../components/Chatbot";
 import {
   fetchProducts,
   fetchProductsByCategory,
-  sortProductsByPrice
+  sortProductsByPrice,
 } from "../utils/api";
 
 const ProductList = () => {
@@ -35,17 +35,17 @@ const ProductList = () => {
           data = await fetchProducts();
         }
 
-        // Apply search filter if there's a search query
         if (searchQuery) {
-          data = data.filter(product =>
-            product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            product.description.toLowerCase().includes(searchQuery.toLowerCase())
+          const query = searchQuery.toLowerCase();
+          data = data.filter(
+            (product) =>
+              product.title.toLowerCase().includes(query) ||
+              product.description.toLowerCase().includes(query)
           );
         }
 
-        // Apply sorting if needed
         if (filterSort.sort) {
-          const sortOrder = filterSort.sort === 'price_low' ? 'asc' : 'desc';
+          const sortOrder = filterSort.sort === "price_low" ? "asc" : "desc";
           data = sortProductsByPrice(data, sortOrder);
         }
 
@@ -53,6 +53,7 @@ const ProductList = () => {
         setFilteredProducts(data);
         setLoading(false);
       } catch (err) {
+        console.error("Error fetching products:", err);
         setError("Failed to fetch products. Please try again later.");
         setLoading(false);
       }
@@ -61,7 +62,11 @@ const ProductList = () => {
     getProducts();
   }, [filterSort.category, filterSort.sort, searchQuery]);
 
-  // Loading state
+  // Handle filter and sort changes
+  const handleFilterSortChange = (newFilterSort) => {
+    setFilterSort(newFilterSort);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -73,12 +78,11 @@ const ProductList = () => {
     );
   }
 
-  // Error state
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
-  // Remove recommended products from filtered products to avoid duplication
   const filteredWithoutRecommendations = filteredProducts.filter(
-    (product) => !recommendedProducts.some((recommended) => recommended.id === product.id)
+    (product) =>
+      !recommendedProducts.some((recommended) => recommended.id === product.id)
   );
 
   const hasRecommendations = recommendedProducts.length > 0;
@@ -88,15 +92,18 @@ const ProductList = () => {
       {/* Category and Filter Section */}
       <div className="mb-8">
         <FilterSort
-          onFilterSortChange={setFilterSort}
+          onFilterSortChange={handleFilterSortChange}
           currentCategory={filterSort.category}
+          currentSort={filterSort.sort}
         />
       </div>
 
       {/* Recommended Products Section */}
       {hasRecommendations && (
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4 border-b pb-2">Recommended for You</h2>
+          <h2 className="text-2xl font-bold mb-4 border-b pb-2">
+            Recommended for You
+          </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {recommendedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
@@ -109,11 +116,22 @@ const ProductList = () => {
       {filteredWithoutRecommendations.length > 0 ? (
         <div>
           <h2 className="text-2xl font-bold mb-4 border-b pb-2">
-            {filterSort.category === "All" ? "All Products" : filterSort.category}
+            {filterSort.category === "All"
+              ? "All Products"
+              : filterSort.category}
+            {filterSort.sort &&
+              ` - ${
+                filterSort.sort === "price_low"
+                  ? "Price: Low to High"
+                  : "Price: High to Low"
+              }`}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {filteredWithoutRecommendations.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={`${product.id}-${filterSort.sort}`}
+                product={product}
+              />
             ))}
           </div>
         </div>
@@ -126,7 +144,10 @@ const ProductList = () => {
       )}
 
       {/* Chatbot Component */}
-      <Chatbot products={products} setRecommendedProducts={setRecommendedProducts} />
+      <Chatbot
+        products={products}
+        setRecommendedProducts={setRecommendedProducts}
+      />
     </div>
   );
 };

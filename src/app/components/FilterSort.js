@@ -4,9 +4,12 @@ import { useState, useEffect } from "react";
 import { FaFilter, FaSortAmountDown } from "react-icons/fa";
 import { fetchCategories } from "../utils/api";
 
-const FilterSort = ({ onFilterSortChange, currentCategory = "All" }) => {
-  const [category, setCategory] = useState(currentCategory);
-  const [sort, setSort] = useState("");
+
+const FilterSort = ({
+  onFilterSortChange,
+  currentCategory = "All",
+  currentSort = "",
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +28,7 @@ const FilterSort = ({ onFilterSortChange, currentCategory = "All" }) => {
           "electronics",
           "jewelery",
           "men's clothing",
-          "women's clothing"
+          "women's clothing",
         ]);
       } finally {
         setLoading(false);
@@ -35,40 +38,51 @@ const FilterSort = ({ onFilterSortChange, currentCategory = "All" }) => {
     getCategories();
   }, []);
 
-  useEffect(() => {
-    onFilterSortChange({ category, sort });
-  }, [category, sort, onFilterSortChange]);
+  const toggleDropdown = () => setIsExpanded((v) => !v);
 
-  useEffect(() => {
-    if (currentCategory !== category) {
-      setCategory(currentCategory);
-    }
-  }, [currentCategory]);
-
-  const toggleDropdown = () => setIsExpanded(!isExpanded);
-
-  // Format category name for display
   const formatCategory = (category) => {
     if (category === "All") return "All Products";
     return category
       .split(" ")
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
 
+  const handleCategoryClick = (cat) => {
+    if (
+      typeof onFilterSortChange === "function" &&
+      currentCategory !== cat
+    ) {
+      onFilterSortChange({ category: cat, sort: currentSort });
+    }
+  };
+
+  const handleSortChange = (event) => {
+    const newSortValue = event.target.value;
+    if (
+      typeof onFilterSortChange === "function" &&
+      currentSort !== newSortValue
+    ) {
+      onFilterSortChange({ category: currentCategory, sort: newSortValue });
+    }
+  };
+
   if (loading) {
-    return <div className="flex justify-center py-4">Loading categories...</div>;
+    return (
+      <div className="flex justify-center py-4">Loading categories...</div>
+    );
   }
 
   return (
     <div className="mb-6">
+      {/* Desktop Categories */}
       <div className="hidden md:flex flex-wrap gap-2 mb-4">
         {categories.map((cat) => (
           <button
             key={cat}
-            onClick={() => setCategory(cat)}
+            onClick={() => handleCategoryClick(cat)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              category === cat
+              currentCategory === cat
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
@@ -99,9 +113,9 @@ const FilterSort = ({ onFilterSortChange, currentCategory = "All" }) => {
               {categories.map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => setCategory(cat)}
+                  onClick={() => handleCategoryClick(cat)}
                   className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    category === cat
+                    currentCategory === cat
                       ? "bg-blue-600 text-white"
                       : "bg-gray-200 text-gray-700"
                   }`}
@@ -116,8 +130,8 @@ const FilterSort = ({ onFilterSortChange, currentCategory = "All" }) => {
           <div>
             <label className="text-sm font-bold block mb-2">Sort By:</label>
             <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
+              value={currentSort}
+              onChange={handleSortChange}
               className="p-2 border rounded-lg w-full"
             >
               <option value="">Default</option>
@@ -134,8 +148,8 @@ const FilterSort = ({ onFilterSortChange, currentCategory = "All" }) => {
           <FaSortAmountDown className="text-gray-500" />
           <label className="text-sm font-semibold">Sort By:</label>
           <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
+            value={currentSort}
+            onChange={handleSortChange}
             className="p-2 border rounded-lg bg-white"
           >
             <option value="">Default</option>

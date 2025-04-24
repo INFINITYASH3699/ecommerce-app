@@ -35,12 +35,12 @@ const WishlistPage = () => {
     setTimeout(() => {
       removeFromWishlist(id);
       setRemovingItem(null);
-    }, 1000); // Delay to simulate confirmation or animation
+    }, 1000);
   };
 
   const handleAddToCart = (product) => {
     addToCart(product);
-    removeFromWishlist(product.id); // Optionally remove from wishlist after adding to cart
+    removeFromWishlist(product.id);
   };
 
   const handleProductClick = (id) => {

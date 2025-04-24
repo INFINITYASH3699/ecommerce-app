@@ -1,10 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearch } from "../context/SearchContext"; // Import Search Context
+import { useSearch } from "../context/SearchContext";
 import FilterSort from "../components/FilterSort";
 import ProductCard from "../components/ProductCard";
-import Chatbot from "../components/Chatbot"; // Import Chatbot Component
+import Chatbot from "../components/Chatbot";
+import {
+  fetchProducts,
+  fetchProductsByCategory,
+  sortProductsByPrice
+} from "../utils/api";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -13,17 +18,37 @@ const ProductList = () => {
   const [error, setError] = useState("");
   const [filterSort, setFilterSort] = useState({ category: "All", sort: "" });
   const [recommendedProducts, setRecommendedProducts] = useState([]);
-  const { searchQuery } = useSearch(); // Use search query context
+  const { searchQuery } = useSearch();
 
-  // Fetch products from a public API
+  // Fetch products from API
   useEffect(() => {
-    const fetchProducts = async () => {
+    const getProducts = async () => {
       try {
-        const response = await fetch("https://fakestoreapi.com/products");
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
+        setLoading(true);
+        let data;
+
+        if (filterSort.category !== "All") {
+          // Fetch products by category if a specific category is selected
+          data = await fetchProductsByCategory(filterSort.category);
+        } else {
+          // Fetch all products
+          data = await fetchProducts();
         }
-        const data = await response.json();
+
+        // Apply search filter if there's a search query
+        if (searchQuery) {
+          data = data.filter(product =>
+            product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        }
+
+        // Apply sorting if needed
+        if (filterSort.sort) {
+          const sortOrder = filterSort.sort === 'price_low' ? 'asc' : 'desc';
+          data = sortProductsByPrice(data, sortOrder);
+        }
+
         setProducts(data);
         setFilteredProducts(data);
         setLoading(false);
@@ -33,36 +58,8 @@ const ProductList = () => {
       }
     };
 
-    fetchProducts();
-  }, []);
-
-  // Filter and sort products based on user input
-  useEffect(() => {
-    let updatedProducts = [...products];
-
-    // Apply search filter
-    if (searchQuery) {
-      updatedProducts = updatedProducts.filter((product) =>
-        product.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Apply category filter
-    if (filterSort.category && filterSort.category !== "All") {
-      updatedProducts = updatedProducts.filter(
-        (product) => product.category === filterSort.category
-      );
-    }
-
-    // Apply price sorting
-    if (filterSort.sort === "price_low") {
-      updatedProducts.sort((a, b) => a.price - b.price);
-    } else if (filterSort.sort === "price_high") {
-      updatedProducts.sort((a, b) => b.price - a.price);
-    }
-
-    setFilteredProducts(updatedProducts);
-  }, [searchQuery, filterSort, products]);
+    getProducts();
+  }, [filterSort.category, filterSort.sort, searchQuery]);
 
   // Loading state
   if (loading) {
@@ -87,15 +84,20 @@ const ProductList = () => {
   const hasRecommendations = recommendedProducts.length > 0;
 
   return (
-    <div className="container mx-auto p-4">
-      {/* Filter and Sort Options */}
-      <FilterSort onFilterSortChange={setFilterSort} />
+    <div className="max-w-screen-xl mx-auto p-4">
+      {/* Category and Filter Section */}
+      <div className="mb-8">
+        <FilterSort
+          onFilterSortChange={setFilterSort}
+          currentCategory={filterSort.category}
+        />
+      </div>
 
-      {/* Product List */}
+      {/* Recommended Products Section */}
       {hasRecommendations && (
-        <div className="col-span-full mb-6">
-          <h2 className="text-2xl font-bold mb-4">Recommended for You</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4 border-b pb-2">Recommended for You</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {recommendedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -103,24 +105,23 @@ const ProductList = () => {
         </div>
       )}
 
-      {/* If there are no recommendations, show All Products text */}
-      {!hasRecommendations && filteredWithoutRecommendations.length === 0 && (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <p className="text-4xl font-semibold text-gray-500">
-            No products available based on your filter.
-          </p>
-        </div>
-      )}
-
-      {/* Display remaining products if no recommendations are active */}
-      {!hasRecommendations && (
+      {/* All Products Section */}
+      {filteredWithoutRecommendations.length > 0 ? (
         <div>
-          <h2 className="text-2xl font-bold mb-4">All Products</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h2 className="text-2xl font-bold mb-4 border-b pb-2">
+            {filterSort.category === "All" ? "All Products" : filterSort.category}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {filteredWithoutRecommendations.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center min-h-[40vh]">
+          <p className="text-xl font-semibold text-gray-500">
+            No products available based on your filter.
+          </p>
         </div>
       )}
 

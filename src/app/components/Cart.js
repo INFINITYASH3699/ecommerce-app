@@ -2,6 +2,7 @@
 
 import { useCart } from "../context/CartContext";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Cart() {
   const {
@@ -21,7 +22,7 @@ export default function Cart() {
             Your cart is empty!
           </p>
           <p className="text-gray-500 mt-2">
-            Looks like you haven’t added anything to your cart yet.
+            Looks like you haven't added anything to your cart yet.
           </p>
           <button
             onClick={() => (window.location.href = "/")}
@@ -100,12 +101,12 @@ export default function Cart() {
               </span>
             </div>
 
-            <button
-              onClick={() => alert("Checkout feature coming soon!")}
-              className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105 mb-4"
-            >
-              Proceed to Checkout
-            </button>
+            <Link href="/checkout">
+              <button className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-transform transform hover:scale-105 mb-4">
+                Proceed to Checkout
+              </button>
+            </Link>
+
             <button
               onClick={clearCart}
               className="w-full bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-transform transform hover:scale-105"

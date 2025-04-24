@@ -1,105 +1,113 @@
-# E-commerce App
+# Infinity Store E-Commerce
 
-This project is an E-commerce web application built using **Next.js** and **Tailwind CSS**. It provides a seamless shopping experience with features like product filtering, sorting, and a dynamic cart. Below are the setup instructions and a brief explanation of the implemented features.
+A modern e-commerce application built with Next.js and the Fake Store API. This project demonstrates a functional e-commerce platform with features including product browsing, filtering, cart management, wishlists, user authentication, and checkout.
 
----
+## Features
+
+- **Product Browsing**: View products from different categories
+- **Product Search**: Search products by name or description
+- **Product Filtering**: Filter products by category
+- **Product Sorting**: Sort products by price (low to high or high to low)
+- **Product Details**: View detailed information about each product
+- **Shopping Cart**: Add products to cart, manage quantities, and calculate totals
+- **Wishlist**: Save products to a wishlist for later
+- **User Authentication**: Register and login using Firebase Authentication
+- **Checkout Process**: Simple checkout process with shipping and payment information
+- **Responsive Design**: Works on mobile, tablet, and desktop devices
+
+## Tech Stack
+
+- **Frontend Framework**: Next.js
+- **Styling**: Tailwind CSS
+- **Authentication**: Firebase Authentication
+- **API**: Fake Store API
+- **State Management**: React Context API
+- **Routing**: Next.js App Router
+- **Image Handling**: Next.js Image component
+- **Icons**: React Icons
 
 ## Setup Instructions
 
 ### Prerequisites
 
 1. **Node.js** (v16 or above) must be installed.
-2. **npm** or **yarn** package manager.
+2. **npm**, **yarn**, or **bun** package manager.
 
 ### Steps to Run the Project
 
-1. Clone the repository:
+1. **Clone the repository**
 
    ```bash
    git clone https://github.com/INFINITYASH3699/ecommerce-app.git
    cd ecommerce-app
    ```
 
-2. Install dependencies:
+2. **Install dependencies**
 
    ```bash
    npm install
    # or
    yarn install
+   # or
+   bun install
    ```
 
-3. Start the development server:
+3. **Run the development server**
 
    ```bash
    npm run dev
    # or
    yarn dev
+   # or
+   bun dev
    ```
 
-4. Open your browser and navigate to:
+4. **Open the application**
 
-   ```
-   http://localhost:3000
-   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-5. Build for production:
+### Build for Production
 
-   ```bash
-   npm run build
-   npm start
-   ```
+```bash
+npm run build
+npm start
+```
 
----
+## Deployment
 
-## Features Implemented
+This project is configured for easy deployment on Netlify. The `netlify.toml` file contains the necessary configuration.
 
-### 1. **Product Listing**
+## Project Structure
 
-- Displays a list of products fetched from an external API.
-- Each product shows an image, title, price, and a brief description.
+- `/src/app` - Main application code
+  - `/components` - Reusable UI components
+  - `/context` - React Context providers for state management
+  - `/utils` - Utility functions and API handlers
+  - `/auth` - Authentication pages (login/signup)
+  - `/lib` - Firebase and other library configurations
+  - `/cart` - Shopping cart page
+  - `/checkout` - Checkout page
+  - `/wishlist` - Wishlist page
 
-### 2. **Filter and Sort**
+## API Integration
 
-- **Category Filter:** Users can filter products by categories such as electronics, jewelery, men’s clothing, and women’s clothing.
-- **Sort Options:** Products can be sorted by price (low to high or high to low).
-- Mobile-friendly design with a dropdown that expands below the "Filter & Sort" button.
+The application uses the [Fake Store API](https://fakestoreapi.com/) to fetch product data. The API integration is handled in the `/src/app/utils/api.js` file, which provides functions for:
 
-### 3. **Product Details**
+- Fetching all products
+- Fetching products by category
+- Fetching product details
+- Searching products
+- Sorting products
 
-- Clicking on a product redirects to a detailed page.
-- The detailed view includes:
-  - High-quality product image.
-  - Full description and price.
-  - "Add to Cart" button with real-time cart updates.
+## Firebase Authentication
 
-### 4. **Shopping Cart**
+User authentication is handled using Firebase Authentication. The configuration is in `/src/app/lib/firebase.js`, and the auth context in `/src/app/context/AuthContext.js` provides:
 
-- Real-time cart updates when products are added.
-- Cart contents are stored in the browser’s local storage to persist across sessions.
-
-### 5. **Responsive Design**
-
-- Fully responsive UI optimized for mobile, tablet, and desktop devices.
-
----
-
-## Technology Stack
-
-- **Framework:** Next.js
-- **Styling:** Tailwind CSS
-- **API:** FakeStore API
-
----
-
-## Future Improvements
-
-- Implement user authentication for personalized experiences.
-- Add a checkout process with payment integration.
-- Optimize images using Next.js image optimization features.
-
----
+- User registration
+- User login
+- User logout
+- Auth state tracking
 
 ## Acknowledgments
 
-Special thanks to the [FakeStore API](https://fakestoreapi.com/) for providing the product data.
-
+Special thanks to the [Fake Store API](https://fakestoreapi.com/) for providing the product data.

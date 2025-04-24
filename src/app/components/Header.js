@@ -8,20 +8,23 @@ import {
   FaTimes,
   FaUserCircle,
   FaHeart,
+  FaSignOutAlt,
 } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useSearch } from "../context/SearchContext";
+import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
   const { cartCount } = useCart();
   const { setSearchQuery } = useSearch();
+  const { user, logout } = useAuth();
   const [searchInput, setSearchInput] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Scroll effect to toggle shadow
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10); // Detect scroll for shadow
+      setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -34,6 +37,14 @@ const Header = () => {
   const handleClearSearch = () => {
     setSearchInput("");
     setSearchQuery("");
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   return (
@@ -95,9 +106,25 @@ const Header = () => {
             <FaHeart size={28} />
           </div>
         </Link>
-        <div className="relative cursor-pointer mr-0">
-          <FaUserCircle size={28} />
-        </div>
+
+        {/* User Authentication */}
+        {user ? (
+          <div className="flex items-center gap-2">
+            <div className="hidden md:block text-sm font-medium">
+              {user.email}
+            </div>
+            <button onClick={handleLogout} className="p-1 hover:text-red-300">
+              <FaSignOutAlt size={24} />
+            </button>
+          </div>
+        ) : (
+          <Link href="/auth/login">
+            <div className="flex items-center gap-1 cursor-pointer">
+              <FaUserCircle size={28} />
+              <span className="hidden md:block">Login</span>
+            </div>
+          </Link>
+        )}
       </div>
     </header>
   );

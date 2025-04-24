@@ -4,9 +4,12 @@ import React, { Suspense, useState, useEffect } from "react";
 import { useWishlist } from "../context/WishlistContext";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import Zoom from "react-medium-image-zoom";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaShoppingCart, FaArrowLeft } from "react-icons/fa";
 import "react-medium-image-zoom/dist/styles.css";
+import { fetchProductById } from "../utils/api";
+import Link from "next/link";
 
 function ProductDetailsComponent() {
   const [product, setProduct] = useState(null);
@@ -16,14 +19,16 @@ function ProductDetailsComponent() {
   const [reviews, setReviews] = useState([]);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const { user } = useAuth();
 
   const { addToWishlist, removeFromWishlist, wishlist } = useWishlist();
 
-  const isInWishlist = wishlist.some((item) => item.id === product.id);
+  const isInWishlist = product ? wishlist.some((item) => item.id === product.id) : false;
 
   // Toggle wishlist status
   const toggleWishlist = (e) => {
-    e.preventDefault(); // Prevent navigation when clicking the icon
+    e.preventDefault();
+    if (!product) return;
     if (isInWishlist) {
       removeFromWishlist(product.id);
     } else {
@@ -34,14 +39,11 @@ function ProductDetailsComponent() {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    const fetchProductDetails = async () => {
+    const getProductDetails = async () => {
       try {
-        const response = await fetch(`https://fakestoreapi.com/products/${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch product details");
-        }
-        const data = await response.json();
-        setProduct(data);
+        setLoading(true);
+        const productData = await fetchProductById(id);
+        setProduct(productData);
 
         // Mock reviews data
         setReviews([
@@ -56,7 +58,7 @@ function ProductDetailsComponent() {
         setLoading(false);
       }
     };
-    if (id) fetchProductDetails();
+    if (id) getProductDetails();
   }, [id]);
 
   const handleAddToCart = () => {
@@ -91,6 +93,14 @@ function ProductDetailsComponent() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 my-10 mt-28 bg-white shadow-lg rounded-lg">
+      {/* Back button */}
+      <Link
+        href="/"
+        className="flex items-center text-blue-600 hover:text-blue-800 mb-6"
+      >
+        <FaArrowLeft className="mr-2" /> Back to Products
+      </Link>
+
       <div className="flex flex-col md:flex-row gap-12">
         <div className="w-full md:w-1/2 relative">
           <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -106,26 +116,35 @@ function ProductDetailsComponent() {
         </div>
         <div className="w-full md:w-1/2 flex flex-col justify-between">
           <div>
-            <div
-              onClick={toggleWishlist}
-              className="absolute top-8 md:top-10 right-8 md:right-56 cursor-pointer z-10 mt-28"
-            >
-              <FaHeart
-                className={`text-2xl ${
-                  isInWishlist ? "text-red-500" : "text-gray-300"
-                }`}
-              />
+            <div className="flex justify-between items-start">
+              <h1 className="text-3xl font-extrabold text-gray-800 mb-4 md:pr-10">
+                {product.title}
+              </h1>
+              <button
+                onClick={toggleWishlist}
+                className="text-2xl flex-shrink-0"
+              >
+                <FaHeart
+                  className={`${
+                    isInWishlist ? "text-red-500" : "text-gray-300"
+                  }`}
+                />
+              </button>
             </div>
-            <h1 className="text-3xl font-extrabold text-gray-800 mb-4 md:pr-28">
-              {product.title}
-            </h1>
             <p className="text-lg text-gray-600 mb-6">{product.description}</p>
             <p className="inline-block px-3 py-1 text-sm font-semibold text-white bg-blue-500 rounded-full mb-4">
               {product.category}
             </p>
             <p className="text-2xl font-bold text-green-600">
-              ${product.price}
+              ${product.price.toFixed(2)}
             </p>
+
+            {/* User review prompt */}
+            {user && (
+              <div className="mt-4 text-sm text-blue-600">
+                Purchased this item? Leave a review!
+              </div>
+            )}
           </div>
 
           <div className="flex items-center space-x-4 mt-6">
@@ -144,9 +163,9 @@ function ProductDetailsComponent() {
 
           <button
             onClick={handleAddToCart}
-            className="mt-8 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-transform transform hover:scale-105"
+            className="mt-8 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 flex items-center justify-center"
           >
-            Add to Cart
+            <FaShoppingCart className="mr-2" /> Add to Cart
           </button>
 
           <button
